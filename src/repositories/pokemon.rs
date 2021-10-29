@@ -3,6 +3,7 @@ use crate::domain::entities::{Pokemon, PokemonName, PokemonNumber, PokemonTypes}
 pub enum Insert {
     Ok(PokemonNumber),
     Conflict,
+    Error,
 }
 
 pub trait Repository {
@@ -10,18 +11,33 @@ pub trait Repository {
 }
 
 pub struct InMemoryRepository {
+    error: bool,
     pokemons: Vec<Pokemon>,
 }
 
 impl InMemoryRepository {
     pub fn new() -> Self {
         let pokemons: Vec<Pokemon> = vec![];
-        Self { pokemons }
+        Self {
+            error: false,
+            pokemons,
+        }
+    }
+
+    pub fn with_error(self) -> Self {
+        Self {
+            error: true,
+            ..self
+        }
     }
 }
 
 impl Repository for InMemoryRepository {
     fn insert(&mut self, number: PokemonNumber, name: PokemonName, types: PokemonTypes) -> Insert {
+        if self.error {
+            return Insert::Error;
+        }
+
         if self.pokemons.iter().any(|pokemon| pokemon.number == number) {
             return Insert::Conflict;
         }

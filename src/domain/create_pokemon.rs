@@ -12,6 +12,7 @@ enum Response {
     Ok(u16),
     BadRequest,
     Conflict,
+    Error,
 }
 
 fn execute(repo: &mut dyn Repository, req: Request) -> Response {
@@ -23,6 +24,7 @@ fn execute(repo: &mut dyn Repository, req: Request) -> Response {
         (Ok(number), Ok(name), Ok(types)) => match repo.insert(number, name, types) {
             Insert::Ok(number) => Response::Ok(u16::from(number)),
             Insert::Conflict => Response::Conflict,
+            Insert::Error => Response::Error,
         },
         _ => Response::BadRequest,
     }
@@ -88,6 +90,24 @@ mod test {
 
         match res {
             Response::BadRequest => {}
+            _ => unreachable!(),
+        };
+    }
+
+    #[test]
+    fn it_should_return_an_error_when_an_unexpected_error_happens() {
+        let mut repo = InMemoryRepository::new().with_error();
+        let number = 25;
+        let req = Request {
+            number,
+            name: String::from("Pikachu"),
+            types: vec![String::from("Electric")],
+        };
+
+        let res = execute(&mut repo, req);
+
+        match res {
+            Response::Error => {}
             _ => unreachable!(),
         };
     }
