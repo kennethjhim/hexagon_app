@@ -1,3 +1,5 @@
+use crate::domain::entities::{PokemonName, PokemonNumber, PokemonTypes};
+
 // plain old data
 struct Request {
     number: u16,
@@ -5,8 +7,20 @@ struct Request {
     types: Vec<String>,
 }
 
-fn execute(req: Request) -> u16 {
-    req.number
+enum Response {
+    Ok(u16),
+    BadRequest,
+}
+
+fn execute(req: Request) -> Response {
+    match (
+        PokemonNumber::try_from(req.number),
+        PokemonName::try_from(req.name),
+        PokemonTypes::try_from(req.types),
+    ) {
+        (Ok(number), Ok(_), Ok(_)) => Response::Ok(u16::from(number)),
+        _ => Response::BadRequest,
+    }
 }
 
 #[cfg(test)]
@@ -25,6 +39,25 @@ mod test {
 
         let res = execute(req);
 
-        assert_eq!(res, number)
+        match res {
+            Response::Ok(res_number) => assert_eq!(res_number, number),
+            _ => unreachable!(),
+        };
+    }
+
+    #[test]
+    fn it_should_return_a_bad_request_error_when_request_is_invalid() {
+        let req = Request {
+            number: 25,
+            name: String::from(""),
+            types: vec![String::from("Electric")],
+        };
+
+        let res = execute(req);
+
+        match res {
+            Response::BadRequest => {}
+            _ => unreachable!(),
+        };
     }
 }
