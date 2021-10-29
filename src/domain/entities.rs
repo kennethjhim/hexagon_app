@@ -1,8 +1,11 @@
 use std::convert::TryFrom;
 
 // business rules
+use std::cmp::PartialEq;
 
 // Pokenumber - number has to be > 0 and < 899
+
+#[derive(PartialEq, Copy, Clone)]
 pub struct PokemonNumber(u16);
 
 impl TryFrom<u16> for PokemonNumber {
@@ -62,6 +65,7 @@ impl TryFrom<Vec<String>> for PokemonTypes {
 
 enum PokemonType {
     Electric,
+    Fire,
 }
 
 impl TryFrom<String> for PokemonType {
@@ -70,7 +74,24 @@ impl TryFrom<String> for PokemonType {
     fn try_from(t: String) -> Result<Self, Self::Error> {
         match t.as_str() {
             "Electric" => Ok(Self::Electric),
+            "Fire" => Ok(Self::Fire),
             _ => Err(()),
+        }
+    }
+}
+
+pub struct Pokemon {
+    pub number: PokemonNumber,
+    name: PokemonName,
+    types: PokemonTypes,
+}
+
+impl Pokemon {
+    pub fn new(number: PokemonNumber, name: PokemonName, types: PokemonTypes) -> Self {
+        Self {
+            number,
+            name,
+            types
         }
     }
 }
