@@ -6,8 +6,8 @@ struct Response {
     message: String,
 }
 
-pub fn serve() -> rouille::Response {
+pub fn serve(_req: &rouille::Request) -> rouille::Response {
     rouille::Response::json(&Response {
-        message: String::from("Gotta catch them all!"),
+        message: String::from("Pokemon created!"),
     })
 }
