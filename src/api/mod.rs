@@ -7,7 +7,7 @@ pub fn serve(url: &str) {
             (GET) (/health) => {
                 health::serve()
             },
-            (POST) (/) => {
+            (POST) (/create_pokemon) => {
                 create_pokemon::serve(req)
             },
             _ => {
