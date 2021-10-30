@@ -21,7 +21,7 @@ impl TryFrom<u16> for PokemonNumber {
 }
 
 impl From<PokemonNumber> for u16 {
-    fn from(n: PokemonNumber) -> u16 {
+    fn from(n: PokemonNumber) -> Self {
         n.0
     }
 }

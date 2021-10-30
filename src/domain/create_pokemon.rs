@@ -1,5 +1,5 @@
 use crate::domain::entities::{PokemonName, PokemonNumber, PokemonTypes};
-use crate::repositories::pokemon::{Repository, Insert};
+use crate::repositories::pokemon::{Repository, InsertError};
 use std::sync::Arc;
 
 // plain old data
@@ -9,25 +9,31 @@ pub struct Request {
     pub types: Vec<String>,
 }
 
-pub enum Response {
-    Ok(u16),
+// pub enum Response {
+//     Ok(u16),
+//     BadRequest,
+//     Conflict,
+//     Error,
+// }
+
+pub enum Error {
     BadRequest,
     Conflict,
-    Error,
+    Unknown,
 }
 
-pub fn execute(repo: Arc<dyn Repository>, req: Request) -> Response {
+pub fn execute(repo: Arc<dyn Repository>, req: Request) -> Result<u16, Error> {
     match (
         PokemonNumber::try_from(req.number),
         PokemonName::try_from(req.name),
         PokemonTypes::try_from(req.types),
     ) {
         (Ok(number), Ok(name), Ok(types)) => match repo.insert(number, name, types) {
-            Insert::Ok(number) => Response::Ok(u16::from(number)),
-            Insert::Conflict => Response::Conflict,
-            Insert::Error => Response::Error,
+            Ok(number) => Ok(u16::from(number)),
+            Err(InsertError::Conflict) => Err(Error::Conflict),
+            Err(InsertError::Unknown) => Err(Error::Unknown),
         },
-        _ => Response::BadRequest,
+        _ => Err(Error::BadRequest),
     }
 }
 
@@ -44,7 +50,7 @@ mod test {
         let types = PokemonTypes::try_from(vec![String::from("Electric")]).unwrap();
         let repo = Arc::new(InMemoryRepository::new());
 
-        repo.insert(number, name, types);
+        repo.insert(number, name, types).ok();
         let req = Request {
             number: u16::from(number),
             name: String::from("Charmander"),
@@ -54,7 +60,7 @@ mod test {
         let res = execute(repo, req);
 
         match res {
-            Response::Conflict => {}
+            Err(Error::Conflict) => {}
             _ => unreachable!(),
         }
     }
@@ -73,7 +79,7 @@ mod test {
         let res = execute(repo, req);
 
         match res {
-            Response::Ok(res_number) => assert_eq!(res_number, number),
+            Ok(res_number) => assert_eq!(res_number, number),
             _ => unreachable!(),
         };
     }
@@ -91,14 +97,14 @@ mod test {
         let res = execute(repo, req);
 
         match res {
-            Response::BadRequest => {}
+            Err(Error::BadRequest) => {}
             _ => unreachable!(),
         };
     }
 
     #[test]
     fn it_should_return_an_error_when_an_unexpected_error_happens() {
-        let repo = Arc::new(InMemoryRepository::new()).with_error();
+        let repo = Arc::new(InMemoryRepository::new().with_error());
         let number = 25;
         let req = Request {
             number,
@@ -109,7 +115,7 @@ mod test {
         let res = execute(repo, req);
 
         match res {
-            Response::Error => {}
+            Err(Error::Unknown) => {}
             _ => unreachable!(),
         };
     }
