@@ -1,5 +1,6 @@
 use crate::api::Status;
 use serde::{Deserialize, Serialize};
+use crate::domain::create_pokemon;
 use crate::repositories::pokemon::Repository;
 use std::sync::Arc;
 
@@ -15,13 +16,20 @@ struct Response {
     message: String,
 }
 
-pub fn serve(_repo: Arc<dyn Repository>, req: &rouille::Request) -> rouille::Response {
-    match rouille::input::json_input::<Request>(req) {
-        Ok(_) => {}
+
+pub fn serve(repo: Arc<dyn Repository>, req: &rouille::Request) -> rouille::Response {
+    let req = match rouille::input::json_input::<Request>(req) {
+        Ok(req) => create_pokemon::Request {
+            number: req.number,
+            name: req.name,
+            types: req.types,
+        },
         _ => return rouille::Response::from(Status::BadRequest),
     };
-
-    rouille::Response::json(&Response {
-        message: String::from("Pokemon created!"),
-    })
+    match create_pokemon::execute(repo, req) {
+        create_pokemon::Response::Ok(number) => rouille::Response::json(&Response { message: String::from ("Pokemon created") }),
+        create_pokemon::Response::BadRequest => rouille::Response::from(Status::BadRequest),
+        create_pokemon::Response::Conflict => rouille::Response::from(Status::Conflict),
+        create_pokemon::Response::Error => rouille::Response::from(Status::InternalServerError),
+    }
 }
