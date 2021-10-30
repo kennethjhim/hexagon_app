@@ -1,4 +1,4 @@
-use crate::domain::entities::{PokemonName, PokemonNumber, PokemonTypes};
+use crate::domain::entities::{PokemonName, PokemonNumber, PokemonTypes, Pokemon};
 use crate::repositories::pokemon::{Repository, InsertError};
 use std::sync::Arc;
 
@@ -9,12 +9,11 @@ pub struct Request {
     pub types: Vec<String>,
 }
 
-// pub enum Response {
-//     Ok(u16),
-//     BadRequest,
-//     Conflict,
-//     Error,
-// }
+pub struct Response {
+    pub number: u16,
+    pub name: String,
+    pub types: Vec<String>,
+}
 
 pub enum Error {
     BadRequest,
@@ -22,14 +21,22 @@ pub enum Error {
     Unknown,
 }
 
-pub fn execute(repo: Arc<dyn Repository>, req: Request) -> Result<u16, Error> {
+pub fn execute(repo: Arc<dyn Repository>, req: Request) -> Result<Response, Error> {
     match (
         PokemonNumber::try_from(req.number),
         PokemonName::try_from(req.name),
         PokemonTypes::try_from(req.types),
     ) {
         (Ok(number), Ok(name), Ok(types)) => match repo.insert(number, name, types) {
-            Ok(number) => Ok(u16::from(number)),
+            Ok(Pokemon {
+                number,
+                name,
+                types,
+            }) => Ok(Response {
+                number: u16::from(number),
+                name: String::from(name),
+                types: Vec::<String>::from(types),
+            }),
             Err(InsertError::Conflict) => Err(Error::Conflict),
             Err(InsertError::Unknown) => Err(Error::Unknown),
         },
@@ -68,10 +75,8 @@ mod test {
     #[test]
     fn it_should_return_the_pokemon_number_otherwise() {
         let repo = Arc::new(InMemoryRepository::new());
-
-        let number = 25;
         let req = Request {
-            number,
+            number: 25,
             name: String::from("Pikachu"),
             types: vec![String::from("Electric")],
         };
@@ -79,7 +84,15 @@ mod test {
         let res = execute(repo, req);
 
         match res {
-            Ok(res_number) => assert_eq!(res_number, number),
+            Ok(Response {
+                number,
+                name,
+                types,
+            }) => {
+                assert_eq!(number, 25);
+                assert_eq!(name, String::from("Pikachu"));
+                assert_eq!(types, vec![String::from("Electric")]);
+            }
             _ => unreachable!(),
         };
     }
