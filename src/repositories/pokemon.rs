@@ -6,7 +6,7 @@ pub enum Insert {
     Error,
 }
 
-pub trait Repository {
+pub trait Repository: Send + Sync {
     fn insert(&mut self, number: PokemonNumber, name: PokemonName, types: PokemonTypes) -> Insert;
 }
 

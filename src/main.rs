@@ -8,6 +8,10 @@ mod repositories;
 extern crate rouille;
 extern crate serde;
 
+use repositories::pokemon::InMemoryRepository;
+use std::sync::Arc;
+
 fn main() {
-    api::serve("localhost:8000");
+    let repo = Arc::new(InMemoryRepository::new());
+    api::serve("localhost:8000", repo);
 }

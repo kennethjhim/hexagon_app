@@ -1,14 +1,16 @@
 mod create_pokemon;
 mod health;
+use crate::repositories::pokemon::Repository;
+use std::sync::Arc;
 
-pub fn serve(url: &str) {
+pub fn serve(url: &str, repo: Arc<dyn Repository>) {
     rouille::start_server(url, move |req| {
         router!(req,
             (GET) (/health) => {
                 health::serve()
             },
             (POST) (/create_pokemon) => {
-                create_pokemon::serve(req)
+                create_pokemon::serve(repo.clone(), req)
             },
             _ => {
                 rouille::Response::from(Status::NotFound)
