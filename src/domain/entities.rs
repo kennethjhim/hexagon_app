@@ -124,3 +124,36 @@ impl Pokemon {
         }
     }
 }
+
+#[cfg(test)]
+impl PokemonNumber {
+    pub fn pikachu() -> Self {
+        Self(25)
+    }
+}
+
+#[cfg(test)]
+impl PokemonName {
+    pub fn pikachu() -> Self {
+        Self(String::from("Pikachu"))
+    }
+
+    pub fn charmander() -> Self {
+        Self(String::from("Charmander"))
+    }
+
+    pub fn bad() -> Self {
+        Self(String::from(""))
+    }
+}
+
+#[cfg(test)]
+impl PokemonTypes {
+    pub fn pikachu() -> Self {
+        Self(vec![PokemonType::Electric])
+    }
+
+    pub fn charmander() -> Self {
+        Self(vec![PokemonType::Fire])
+    }
+}

@@ -57,12 +57,16 @@ mod test {
         let types = PokemonTypes::try_from(vec![String::from("Electric")]).unwrap();
         let repo = Arc::new(InMemoryRepository::new());
 
-        repo.insert(number, name, types).ok();
-        let req = Request {
-            number: u16::from(number),
-            name: String::from("Charmander"),
-            types: vec![String::from("Fire")],
-        };
+        repo.insert(
+            PokemonNumber::pikachu(),
+            PokemonName::pikachu(),
+            PokemonTypes::pikachu(),
+        ).ok();
+        let req = Request::new(
+            PokemonNumber::pikachu(),
+            PokemonName::charmander(),
+            PokemonTypes::charmander(),
+        );
 
         let res = execute(repo, req);
 
@@ -75,23 +79,19 @@ mod test {
     #[test]
     fn it_should_return_the_pokemon_number_otherwise() {
         let repo = Arc::new(InMemoryRepository::new());
-        let req = Request {
-            number: 25,
-            name: String::from("Pikachu"),
-            types: vec![String::from("Electric")],
-        };
+        let req = Request::new(
+            PokemonNumber::pikachu(),
+            PokemonName::pikachu(),
+            PokemonTypes::pikachu(),
+        );
 
         let res = execute(repo, req);
 
         match res {
-            Ok(Response {
-                number,
-                name,
-                types,
-            }) => {
-                assert_eq!(number, 25);
-                assert_eq!(name, String::from("Pikachu"));
-                assert_eq!(types, vec![String::from("Electric")]);
+            Ok(res) => {
+                assert_eq!(res.number, u16::from(PokemonNumber::pikachu()));
+                assert_eq!(res.name, String::from(PokemonName::pikachu()));
+                assert_eq!(res.types, Vec::<String>::from(PokemonTypes::pikachu()));
             }
             _ => unreachable!(),
         };
@@ -101,11 +101,11 @@ mod test {
     fn it_should_return_a_bad_request_error_when_request_is_invalid() {
         let repo = Arc::new(InMemoryRepository::new());
 
-        let req = Request {
-            number: 25,
-            name: String::from(""),
-            types: vec![String::from("Electric")],
-        };
+        let req = Request::new(
+            PokemonNumber::pikachu(),
+            PokemonName::bad(),
+            PokemonTypes::pikachu(),
+        );
 
         let res = execute(repo, req);
 
@@ -119,11 +119,11 @@ mod test {
     fn it_should_return_an_error_when_an_unexpected_error_happens() {
         let repo = Arc::new(InMemoryRepository::new().with_error());
         let number = 25;
-        let req = Request {
-            number,
-            name: String::from("Pikachu"),
-            types: vec![String::from("Electric")],
-        };
+        let req = Request::new(
+            PokemonNumber::pikachu(),
+            PokemonName::pikachu(),
+            PokemonTypes::pikachu(),
+        );
 
         let res = execute(repo, req);
 
@@ -131,5 +131,15 @@ mod test {
             Err(Error::Unknown) => {}
             _ => unreachable!(),
         };
+    }
+
+    impl Request {
+        fn new(number: PokemonNumber, name: PokemonName, types: PokemonTypes) -> Self {
+            Self {
+                number: u16::from(number),
+                name: String::from(name),
+                types: Vec::<String>::from(types),
+            }
+        }
     }
 }
