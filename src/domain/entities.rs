@@ -132,6 +132,10 @@ impl PokemonNumber {
     pub fn charmander() -> Self {
         Self(4)
     }
+
+    pub fn bad() -> Self {
+        Self(0)
+    }
 }
 
 #[cfg(test)]
