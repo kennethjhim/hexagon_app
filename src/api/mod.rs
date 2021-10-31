@@ -1,4 +1,5 @@
 mod create_pokemon;
+mod fetch_all_pokemons;
 mod health;
 use crate::repositories::pokemon::Repository;
 use std::sync::Arc;
@@ -11,6 +12,9 @@ pub fn serve(url: &str, repo: Arc<dyn Repository>) {
             },
             (POST) (/create_pokemon) => {
                 create_pokemon::serve(repo.clone(), req)
+            },
+            (GET) (/fetch_all_pokemons) => {
+                fetch_all_pokemons::serve(repo.clone())
             },
             _ => {
                 rouille::Response::from(Status::NotFound)
