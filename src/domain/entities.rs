@@ -1,11 +1,9 @@
 use std::convert::TryFrom;
-
-// business rules
-use std::cmp::PartialEq;
+use std::cmp::{PartialEq, PartialOrd};
 
 // Pokenumber - number has to be > 0 and < 899
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, PartialOrd, Ord, Eq)]
 pub struct PokemonNumber(u16);
 
 impl TryFrom<u16> for PokemonNumber {
@@ -129,6 +127,10 @@ impl Pokemon {
 impl PokemonNumber {
     pub fn pikachu() -> Self {
         Self(25)
+    }
+
+    pub fn charmander() -> Self {
+        Self(4)
     }
 }
 
