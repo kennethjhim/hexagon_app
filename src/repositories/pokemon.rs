@@ -394,6 +394,7 @@ impl AirtableRepository {
 
         let res = match ureq::get(&url)
             .set("Authorization", &self.auth_header)
+            // .set("Content-Type", "application/json")
             .call()
         {
             Ok(res) => res,
@@ -452,20 +453,17 @@ impl Repository for AirtableRepository {
         let mut pokemons = vec![];
 
         for record in json.records.into_iter() {
-            match (
+            let pokemon = match (
                 PokemonNumber::try_from(record.fields.number),
                 PokemonName::try_from(record.fields.name),
                 PokemonTypes::try_from(record.fields.types),
             ) {
-                (Ok(number), Ok(name), Ok(types)) => {
-                    pokemons.push(Pokemon::new(number, name, types))
-                }
-                _ => {
-                    // _ => return Err(FetchAllError::Unknown),
+                (Ok(number), Ok(name), Ok(types)) => Pokemon::new(number, name, types),
+                _ => return Err(FetchAllError::Unknown),
                     // warn!("An error: {}; skipped.", FetchAllError::Unknown);
-                    continue;
-                }
-            }
+                    // continue;
+            };
+            pokemons.push(pokemon);
         }
 
         Ok(pokemons)
