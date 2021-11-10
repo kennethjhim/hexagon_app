@@ -458,12 +458,13 @@ impl Repository for AirtableRepository {
                 PokemonName::try_from(record.fields.name),
                 PokemonTypes::try_from(record.fields.types),
             ) {
-                (Ok(number), Ok(name), Ok(types)) => Pokemon::new(number, name, types),
+                (Ok(number), Ok(name), Ok(types)) => { pokemons.push(Pokemon::new(number, name, types)) }
                 _ => return Err(FetchAllError::Unknown),
-                    // warn!("An error: {}; skipped.", FetchAllError::Unknown);
-                    // continue;
+                // _ => {
+                // warn!("An error: {}; skipped.", FetchAllError::Unknown);
+                // continue
+                // }
             };
-            pokemons.push(pokemon);
         }
 
         Ok(pokemons)
