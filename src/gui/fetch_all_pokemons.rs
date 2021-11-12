@@ -7,7 +7,7 @@ pub enum Error {
     Unknown,
 }
 
-#[derive(Clone, Data, Lens)]
+#[derive(Debug, Clone, Data, Lens)]
 pub struct Response {
     pub number: u16,
     pub name: String,

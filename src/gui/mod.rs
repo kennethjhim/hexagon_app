@@ -39,6 +39,12 @@ enum Status {
     InternalServerError,
 }
 
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Debug, Data)]
+enum PokemonType {
+    Electric,
+    Fire,
+}
+
 // this is the Response with index struct
 #[derive(Clone, Data, Lens)]
 struct ListItem {
@@ -62,7 +68,7 @@ struct AppData{
     number: String,
     name: String,
     types: String,
-    list: Option<Vector<ListItem>>,
+    list: Vector<ListItem>,
     current: Option<usize>  // selected list item
 }
 
@@ -70,16 +76,19 @@ impl AppData {
     fn new(repo: Arc<dyn Repository>) -> Self {
 
         let list = match fetch_all_pokemons::execute(repo.clone()) {
-            Ok(pokemon_list) => Some(pokemon_list.into_iter()
+            Ok(pokemon_list) => pokemon_list.into_iter()
                                 .enumerate()
                                 .map(|(i, s)| ListItem::new(i, s))
-                                .collect()),
-            Err(e) => None,
+                                .collect(),
+            Err(e) => Vector::from(vec![]),
         };
+
+        let last_num = list.last().unwrap().item.number.clone() + 1;
+        let last_num_str = last_num.to_string();
 
         Self {
             prefix: "".into(),
-            number: "".into(),
+            number: last_num_str,
             name: "".into(),
             types: "".into(),
             list,
@@ -91,7 +100,7 @@ impl AppData {
         let f = self.prefix.to_lowercase();
         self.list
             .clone()
-            .unwrap()
+            // .unwrap()
             .into_iter()
             .filter(|s| s.item.name.to_lowercase().contains(f.as_str()))
             .collect()

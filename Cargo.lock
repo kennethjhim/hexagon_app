@@ -387,11 +387,33 @@ dependencies = [
 [[package]]
 name = "druid"
 version = "0.7.0"
+source = "git+https://github.com/linebender/druid?rev=1801164629800938ba1316e5b58c5383641fdea6#1801164629800938ba1316e5b58c5383641fdea6"
+dependencies = [
+ "console_error_panic_hook",
+ "druid-derive 0.4.0 (git+https://github.com/linebender/druid?rev=1801164629800938ba1316e5b58c5383641fdea6)",
+ "druid-shell 0.7.0 (git+https://github.com/linebender/druid?rev=1801164629800938ba1316e5b58c5383641fdea6)",
+ "fluent-bundle",
+ "fluent-langneg",
+ "fluent-syntax",
+ "fnv",
+ "im",
+ "instant",
+ "tracing",
+ "tracing-subscriber",
+ "tracing-wasm",
+ "unic-langid",
+ "unicode-segmentation",
+ "xi-unicode",
+]
+
+[[package]]
+name = "druid"
+version = "0.7.0"
 source = "git+https://github.com/linebender/druid.git#b6d389dec1aaafb239e7f0e72caac0d9de4285b6"
 dependencies = [
  "console_error_panic_hook",
- "druid-derive",
- "druid-shell",
+ "druid-derive 0.4.0 (git+https://github.com/linebender/druid.git)",
+ "druid-shell 0.7.0 (git+https://github.com/linebender/druid.git)",
  "fluent-bundle",
  "fluent-langneg",
  "fluent-syntax",
@@ -409,11 +431,54 @@ dependencies = [
 [[package]]
 name = "druid-derive"
 version = "0.4.0"
+source = "git+https://github.com/linebender/druid?rev=1801164629800938ba1316e5b58c5383641fdea6#1801164629800938ba1316e5b58c5383641fdea6"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "druid-derive"
+version = "0.4.0"
 source = "git+https://github.com/linebender/druid.git#b6d389dec1aaafb239e7f0e72caac0d9de4285b6"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "druid-shell"
+version = "0.7.0"
+source = "git+https://github.com/linebender/druid?rev=1801164629800938ba1316e5b58c5383641fdea6#1801164629800938ba1316e5b58c5383641fdea6"
+dependencies = [
+ "anyhow",
+ "bitflags",
+ "block",
+ "cairo-rs",
+ "cfg-if",
+ "cocoa",
+ "core-graphics",
+ "foreign-types",
+ "gdk-sys",
+ "glib-sys",
+ "gtk",
+ "gtk-sys",
+ "instant",
+ "js-sys",
+ "keyboard-types",
+ "kurbo",
+ "lazy_static",
+ "objc",
+ "piet-common",
+ "scopeguard",
+ "time 0.3.4",
+ "tracing",
+ "wasm-bindgen",
+ "web-sys",
+ "winapi",
+ "wio",
 ]
 
 [[package]]
@@ -447,6 +512,16 @@ dependencies = [
  "web-sys",
  "winapi",
  "wio",
+]
+
+[[package]]
+name = "druid-widget-nursery"
+version = "0.1.0"
+source = "git+https://github.com/linebender/druid-widget-nursery.git#1d146418b8d95bba320f27d2b43aced05d8b531e"
+dependencies = [
+ "druid 0.7.0 (git+https://github.com/linebender/druid?rev=1801164629800938ba1316e5b58c5383641fdea6)",
+ "log",
+ "tracing",
 ]
 
 [[package]]
@@ -894,11 +969,14 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "dialoguer",
- "druid",
+ "druid 0.7.0 (git+https://github.com/linebender/druid.git)",
+ "druid-widget-nursery",
  "rouille",
  "rusqlite",
  "serde",
  "serde_json",
+ "strum 0.22.0",
+ "strum_macros 0.22.0",
  "ureq",
 ]
 
@@ -1692,10 +1770,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaf86bbcfd1fa9670b7a129f64fc0c9fcbbfe4f1bc4210e9e98fe71ffc12cde2"
 
 [[package]]
+name = "strum"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7ac893c7d471c8a21f31cfe213ec4f6d9afeed25537c772e08ef3f005f8729e"
+
+[[package]]
 name = "strum_macros"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d06aaeeee809dbc59eb4556183dd927df67db1540de5be8d3ec0b6636358a5ec"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "strum_macros"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "339f799d8b549e3744c7ac7feb216383e4005d94bdb22561b3ab8f3b808ae9fb"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -1725,8 +1821,8 @@ dependencies = [
  "heck",
  "itertools",
  "pkg-config",
- "strum",
- "strum_macros",
+ "strum 0.21.0",
+ "strum_macros 0.21.1",
  "thiserror",
  "toml",
  "version-compare",
