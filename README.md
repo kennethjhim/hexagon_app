@@ -1,12 +1,5 @@
 ### Overview
 
-This is the hexagonal app tutorial using Rust. The features of Rust enables data-driven programming and naturally leads to cleaner design.
-This is the future of programming.
+This is based on the [tutorial](https://alexis-lozano.com/hexagonal-architecture-in-rust-1/) about using Hexagonal Architecture in Rust.
+My goal is to integrate GUI programming with the architecture. I'm going to create GUI in Rust using Druid.
 
-#### Step 1
-
-Use cases
-    * Create a Pokemon
-    * Read all Pokemons
-    * Read one Pokemon
-    * Delete a Pokemon
